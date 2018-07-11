@@ -22,6 +22,15 @@
         <div class="col-md-6">
             <a href="{% url 'restaurant-delete' restaurant.id %}" class="btn btn-outline-danger btn-block">Delete</a>
         </div>
+        <div class="col-md-6">
+            <a href="{% url 'item-create' restaurant.id %}" class="btn btn-outline-primary btn-block">Create Item</a>
+        </div>
+
+    {% for item in restaurant.item_set.all%}
+      <div class = "col-md-6">
+        {{item.name}} - {{item.description}} - {{item.price}}
+      </div>
+    {% endfor %}
     </div>
   </div>
 </div>

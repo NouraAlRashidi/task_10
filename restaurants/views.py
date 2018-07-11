@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
-from .models import Restaurant
-from .forms import RestaurantForm, SignupForm, SigninForm
+from .models import Restaurant, Item
+from .forms import RestaurantForm, SignupForm, SigninForm, ItemForm
 from django.contrib.auth import login, authenticate, logout
 
 def signup(request):
@@ -60,18 +60,30 @@ def restaurant_create(request):
     if request.method == "POST":
         form = RestaurantForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
+            the_owner = form.save(commit = False)
+            the_owner.owner = request.user
+            the_owner.save()
             return redirect('restaurant-list')
     context = {
         "form":form,
     }
     return render(request, 'create.html', context)
 
-def item_create(request):
-
+def item_create(request, restaurant_id):
+    my_item = Restaurant.objects.get(id=restaurant_id)
+    form = ItemForm()
+    if request.method == "POST":
+        form = ItemForm(request.POST)
+        if form.is_valid():
+            my_obj = form.save(commit = False)
+            my_obj.restaurant= my_item
+            my_obj.save()
+            return redirect('restaurant-detail',restaurant_id)
     context = {
-        
+        "my_item": my_item,
+        "form":form,
     }
+    
     return render(request, 'item_create.html', context)
 
 def restaurant_update(request, restaurant_id):
